@@ -20,6 +20,8 @@ const changeState = (state, action) => {
             return { ...state, bgColorChange: payload }
         case "ADD_IMAGES":
             return { ...state, images: [...state.images , ...payload] }
+            case "ADD_LIKES_IMAGES" :
+                return {...state, likesImage : [...state.likesImage, payload]}
         default:
             return state
     }
@@ -31,8 +33,12 @@ export function GlobalContextProvider({ children }) {
     const [state, dispatch] = useReducer(changeState, {
         colors: ["#4C4B16", "#4CC9FE", "#C62E2E"],
         bgColorChange: null,
-        images: []
+        images: [], 
+        likesImage:[]
     })
+
+   console.log(state);
+   
 
     useEffect(() => {
         localStorage.setItem("my-data", JSON.stringify(state))

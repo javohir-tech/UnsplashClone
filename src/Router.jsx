@@ -1,24 +1,28 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from './App'
-import { About, Contacts, Home } from "./Pages";
+import { About, Contacts, Home, LIkesPage } from "./Pages";
 
 
 const router = createBrowserRouter([
     {
-        path:"/",
-        element:<App/>,
-        children:[
+        path: "/",
+        element: <App />,
+        children: [
             {
                 index: true,
-                element:<Home/>
+                element: <Home />
             },
             {
-                path:"about", 
-                element: <About/>
-            }, 
+                path: "about",
+                element: <About />
+            },
             {
-                path:"contacts",
-                element:<Contacts/>
+                path: "contacts",
+                element: <Contacts />
+            },
+            {
+                path: "likesImages",
+                element: <LIkesPage/>
             }
         ]
     }
