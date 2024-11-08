@@ -10,6 +10,9 @@ import { useGlobalContext } from '../Hooks/useGlobalContext'
 //components
 import Images from "../Components/Images"
 
+//loading effect 
+import { Riple } from "react-loading-indicators"
+
 export default function Home() {
 
   const { colors, dispatch, images } = useGlobalContext()
@@ -30,7 +33,9 @@ export default function Home() {
   }, [data])
 
   if (isPending) {
-    return <h1>Loading...</h1>
+    return <h1 className="text-center">
+      <Riple color="#1f79d1" size="medium" text="" textColor="" />
+    </h1>
   }
 
 
