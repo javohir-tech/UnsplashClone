@@ -1,33 +1,31 @@
 //react icons 
 import { IoHeartOutline } from "react-icons/io5";
 import { MdOutlineSimCardDownload } from "react-icons/md";
+import { FaHeart } from "react-icons/fa6";
 
 //custom hooks
 import { useGlobalContext } from "../Hooks/useGlobalContext";
-import { FaHeart } from "react-icons/fa6";
+
+
+//toast
+import { toast  } from 'react-toastify';
 
 export default function Images({ links, user, urls, alt, image }) {
 
     const { dispatch, likesImage, images } = useGlobalContext()
 
-    const addLIkesImages = (image) => {
-        const alReadyAdded = likesImage.some((img) => img.id == image.id)
+    const addLIkesImages = (likeImages) => {
+        const alReadyAdded = likesImage.some((img) => img.id == likeImages.id)
 
         if (!alReadyAdded) {
-            dispatch({ type: "ADD_LIKES_IMAGES", payload: image })
+            dispatch({ type: "ADD_LIKES_IMAGES", payload: likeImages })
+        }else{
+           toast.warn("Image already added")
         }
     }
 
     const likededImage = likesImage.some((img) => img.id === image.id)
     console.log(likededImage);
-
-
-
-    // const likedImage = () =>{
-    //     if(image.id=== )
-    // }
-
-
 
     return (
         <div className='group relative'>
