@@ -1,30 +1,70 @@
-import { NavLink } from 'react-router-dom'
+//components
+import { NavbarLinks } from './'
 
-//custom react hooks
-import { useGlobalContext } from '../Hooks/useGlobalContext';
+//rect icons 
+import { FcStackOfPhotos } from "react-icons/fc";
+import { IoIosHeart } from "react-icons/io";
+import { FiSun } from "react-icons/fi";
+import { FaMoon } from "react-icons/fa6";
 
-//react icons
-import { FaHeart } from "react-icons/fa6";
+//react
+import { useEffect, useState } from 'react';
 
-export default function Navbar() {
-  const { colors, bgColorChange } = useGlobalContext()
-  console.log(colors);
+//react-router-dom
+import { Link } from 'react-router-dom';
 
-  return (
-    <>
-      <nav className='bg-slate-300 py-5' style={{ backgroundColor: bgColorChange ? bgColorChange : "" }}>
-        <div className='container mx-auto'>
-          <div className='flex justify-between'>
-            <NavLink to="/"><h3>Logo</h3></NavLink>
-            <div className='flex items-center gap-5'>
-              <NavLink to="/" >Home</NavLink>
-              <NavLink to="/about">About</NavLink>
-              <NavLink to="/contacts">Contacts</NavLink>
-              <NavLink to="/likesImages"><FaHeart /></NavLink>
+function Navbar() {
+
+    //toogle theme
+    const themeFromLocal = () => {
+        return localStorage.getItem("theme") || "winter"
+    }
+
+    const [theme, setTheme] = useState(themeFromLocal());
+
+    const toggleTheme = () => {
+        const newTheme = theme === "winter" ? "dracula" : "winter"
+        setTheme(newTheme)
+    }
+
+    useEffect(() => {
+        localStorage.setItem("theme", theme)
+        document.documentElement.setAttribute("data-theme", theme)
+    }, [theme])
+
+    return (
+        <nav className='bg-base-300'>
+            <div className='container'>
+                <div className='navbar'>
+                    <div className='navbar-start'>
+                       <Link to="/"> <FcStackOfPhotos className='w-8 h-8' /></Link>
+                    </div>
+                    <div className='navbar-center'>
+                        <ul className="menu menu-horizontal rounded-box flex">
+                            <NavbarLinks />
+                        </ul>
+                    </div>
+                    <div className='navbar-end flex gap-3 items-center align-middle'>
+                        <div>
+                            <Link to="/likedImages"><IoIosHeart className='w-7 h-7' /></Link>
+                        </div>
+                        <div>
+                            <label className="swap swap-rotate">
+                                {/* this hidden checkbox controls the state */}
+                                <input onClick={toggleTheme} type="checkbox" className="theme-controller" value="synthwave" />
+
+                                {/* sun icon */}
+                                <FiSun className='swap-on h-6 w-6 fill-current' />
+
+                                {/* moon icon */}
+                                <FaMoon className='swap-off h-6 w-6 fill-current' />
+                            </label>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </nav>
-    </>
-  )
+        </nav>
+    )
 }
+
+export default Navbar

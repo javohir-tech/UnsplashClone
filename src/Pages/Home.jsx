@@ -1,71 +1,65 @@
-// masonary responsive
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
-
-//custom react hooks
-import { useEffect, useState } from 'react'
-import { useFetch } from '../Hooks/useFetch'
-
-//context
-import { useGlobalContext } from '../Hooks/useGlobalContext'
 //components
-import Images from "../Components/Images"
+import { ImageBox, Search } from '../Components'
 
-//loading effect 
-import { Riple } from "react-loading-indicators"
+//react router dom
+import { useActionData } from 'react-router-dom';
 
-export default function Home() {
+//custom hooks 
+import { useFetch } from '../Hooks/useFetch';
+import { useEffect, useRef, useState } from 'react';
 
-  const { colors, dispatch, images } = useGlobalContext()
-  // console.log(images)
+export const action = async ({ request }) => {
+  let formData = await request.formData();
+  let search = formData.get("Search")
+  return search
+}
 
-  // const changeColor = (color)=>{
-  //   dispatch({type:"BG_COLOR_CHANGE", payload: color})
-  // }
+function Home() {
 
-  const [pageNumber, setPageNumber] = useState(1)
+  const searchParamFromAction = useActionData()
+  // console.log(searchParamFromAction)
+  const [allImages, setAllImages] = useState([])
+  const [pageNumber, ssetPageNumber] = useState(1)
 
-  const { data, isPending, error } = useFetch(`https://api.unsplash.com/search/photos?client_id=${import.meta.env.VITE_ACCESS_KEY}&query=car&page=${pageNumber}`)
+  const prevSearchAction = useRef(searchParamFromAction)
+
+  const { data, isPending, error } = useFetch(`https://api.unsplash.com/search/photos?client_id=${import.meta.env.VITE_ACCESS_KEY}&query=${searchParamFromAction ?? "all"}&page=${pageNumber}`)
 
   useEffect(() => {
     if (data) {
-      dispatch({ type: "ADD_IMAGES", payload: data.results })
+      setAllImages((prevImages) => {
+        return pageNumber === 1 ? data.results : [...prevImages, ...data.results]
+      })
     }
   }, [data])
 
-  if (isPending) {
-    return <h1 className="text-center">
-      <Riple color="#1f79d1" size="medium" text="" textColor="" />
-    </h1>
+  useEffect(()=>{
+    if(searchParamFromAction != prevSearchAction.current){
+      setAllImages([])
+      ssetPageNumber(1)
+      prevSearchAction.current =  searchParamFromAction
+    }
+  }, [searchParamFromAction])
+
+  if (error) {
+    return <h1>Error : {error}</h1>
   }
 
 
+
   return (
-    <>
+    <div className='container'>
+      <Search />
 
-      <div className='container mx-auto mt-5'>
-        {/* <div className="flex justify-end mt-5 gap-5">
-          {colors.map((color, index) => (
-            <button onClick={() => changeColor(color)} key={index} className='w-5 h-5' style={{ backgroundColor: color }}></button>
-          ))}
-        </div> */}
-
-
-        <ResponsiveMasonry
-          columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}
-        >
-          <Masonry gutter="10px">
-            {
-              images.length > 0 ? images.map((image) => {
-                // console.log(image)
-                const { id, links, user, urls, alt_description } = image
-                return <Images key={id} links={links} user={user} urls={urls} alt={alt_description} image={image}/>
-              }) : <p>rasm topilmadi</p>
-            }
-          </Masonry>
-        </ResponsiveMasonry>
-        <button onClick={() => setPageNumber(pageNumber + 1)} className="border w-full mt-5 py-2 transition-all hover:bg-slate-700 rounded-lg " >Read More</button>
+      <div>
+        {allImages.length > 0 ? <ImageBox images={allImages} /> : <p className='text-center'>Data is defiend</p>}
+        {isPending && <h1 className='text-center'>Loading...</h1>}
+        <div className="my-10">
+          <button onClick={() => ssetPageNumber(pageNumber + 1)} className="btn btn-secondary btn-block">Read More </button>
+        </div>
       </div>
-
-    </>
+    </div>
   )
 }
+
+export default Home
